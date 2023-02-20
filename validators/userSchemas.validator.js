@@ -1,6 +1,10 @@
 const Joi = require("joi");
 
 class Validate {
+
+  validateFullName
+
+
   validateUser(user) {
     const schema = Joi.object({
       fullName: Joi.string().required().min(3).max(100).trim(),

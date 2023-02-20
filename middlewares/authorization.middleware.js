@@ -1,11 +1,13 @@
+const {ENUM, MESSAGES} = require("../constants/constants");
+
 class Authorize {
     authorizeAdmin(req, res, next){
         console.log(req.body)
-        if (req.user.role !== "admin") {
+        if (req.user.role !== ENUM.ADMIN) {
             return res.status(403)
                 .send({
                     success: false, 
-                    message: 'Access Denied: Unauthorized request'
+                    message: MESSAGES.AUTH.DENIED
                 })
         }
         next();

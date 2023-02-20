@@ -1,6 +1,5 @@
-const mongoose = require('mongoose');
-const {model, Schema} = mongoose;
-const {ENUM, DATABASES} = require("../constants/constants");
+const {model, Schema} = require('mongoose');
+const {ENUM, DATABASES, SALTROUNDS} = require("../constants/constants");
 const bcrypt = require("bcrypt");
 
 const userSchema = new Schema({
@@ -46,11 +45,10 @@ const userSchema = new Schema({
 });
 
 userSchema.pre('save', async function (next) {
-    const saltRounds = 10;
-    const salt = await bcrypt.genSalt(saltRounds);
-    this.password = await bcrypt.hash(this.password, salt);
-    // if (this.isModified('password') || this.isNew) {
-    // }
+    if (this.isModified('password') || this.isNew) {
+        const salt = await bcrypt.genSalt(SALTROUNDS);
+        this.password = await bcrypt.hash(this.password, salt);
+    }
     next();
 });
 

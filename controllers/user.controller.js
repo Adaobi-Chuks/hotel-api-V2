@@ -1,7 +1,19 @@
 const UserService = require('../services/user.service');
-const {validateUser} = require("../validators/user.validator");
 const bcrypt = require("bcrypt");
 const { editUserById } = require('../services/user.service');
+const {
+    CREATED, 
+    FETCHED, 
+    FETCHEDALL, 
+    UPDATED, 
+    DELETED, 
+    DUPLICATE_ERROR, 
+    INVALID_ID_ERROR,
+    INVALID_EMAIL_ERROR,
+    INVALID_PASSWORD_ERROR,
+    LOGIN
+} = require("../constants/constants").MESSAGES.USER;
+
 
 class UserController {
 
@@ -9,36 +21,24 @@ class UserController {
     async createUser(req, res) {
 
         //checks if req fields are valid
-        const {error, data} = await validateUser(req.body);
-
-        if(error) {
-            let errorMessage = [];    
-            error.details.forEach(detail => {
-                errorMessage.push(detail.message);
-            })
-            return res.status(403)
-            .send({
-                message: errorMessage,
-                success: false
-            });
-        }
+        const data = req.body;
 
         //checks if another user with email exists
         if (await UserService.userExists(data.email)) {
             //sends an error if the email exists
             return res.status(409)
             .send({
-                message: 'user already exist',
+                message: DUPLICATE_ERROR,
                 success: false
             });
         }
 
         //create a user if the email doesn't exist
-        const createdUser = await UserService.addUser(data);
-        const token = UserService.generateAuthToken();
+        const createdUser = await UserService.createUser(data);
+        const token = UserService.generateAuthToken(createdUser);
         return res.header("token", token).status(201)
             .send({
-                message: 'user created',
+                message: CREATED,
                 success: true,
                 data: {createdUser, token}
             });
@@ -48,7 +48,7 @@ class UserController {
         const users = await UserService.getAllUsers();
         res.status(200).send({
           success: true,
-          message: 'users list',
+          message: FETCHEDALL,
           data: users
         });
     }
@@ -59,23 +59,23 @@ class UserController {
         if (!user) {
           return res.status(404).send({
             success: false,
-            message: 'user not found'
+            message: INVALID_ID_ERROR
           });
         }
 
         res.status(200).send({
           success: true,
-          message: 'user details fetched',
+          message: FETCHED,
           data: user
         });
     }
 
-    async updateUser(req, res) {
+    async editUser(req, res) {
         const id = req.params.id;
         const data = req.body;
         const user = await UserService.findById(id);
         if(!user) return res.status(404).json({
-            message: "Invalid id",
+            message: INVALID_ID_ERROR,
             success: false
         })
         // Fetching existing book title
@@ -85,7 +85,7 @@ class UserController {
                 if(existingRoomEmail._id.toString() !== id){
                     return res.status(403).json({
                         success: false,
-                        message: "Duplicate email"
+                        message: DUPLICATE_ERROR
                     })
                 }
             }
@@ -93,7 +93,7 @@ class UserController {
         const updatedUser = await editUserById(id, data)
         return res.status(200).json({
             success: true,
-            message: "Update successful",
+            message: UPDATED,
             data: updatedUser
         })
     }
@@ -106,7 +106,7 @@ class UserController {
         if(userToDelete) {
             await UserService.deleteUserById(id);
             return res.status(201).send({
-                message: 'Deleted',
+                message: DELETED,
                 success: true,
                 data: userToDelete
             });
@@ -115,22 +115,22 @@ class UserController {
         return res.status(404)
             .send({
                 success: false,
-                message: "Invalid id"
+                message: INVALID_ID_ERROR
             });   
     }
     
     async login(req, res) {
         const user = await UserService.find(req.body.email);
-        if (!user) return res.status(400).send({ success: false, message: 'Invalid email' });
+        if (!user) return res.status(400).send({ success: false, message: INVALID_EMAIL_ERROR });
 
         const validPassword = await bcrypt.compare(req.body.password, user.password);
-        if (!validPassword) return res.status(400).send({ success: false, message: 'Invalid password or email' });
+        if (!validPassword) return res.status(400).send({ success: false, message: INVALID_PASSWORD_ERROR });
 
         const token = UserService.generateAuthToken(user);
 
         res.header('token', token).status(200).send({
             success: true,
-            message: 'login success',
+            message: LOGIN,
             data: { user, token }
         });
     }

@@ -1,11 +1,10 @@
 const User = require('../models/user.model');
-const {V} = require("../constants/constants");
+const {V, MAXAGE} = require("../constants/constants");
 const _ = require("lodash");
 const {isValidObjectId} = require("mongoose");
 const jwt = require("jsonwebtoken");
+const secret = process.env.SECRET;
 
-const maxAge = 3 * 24 * 60 * 60000;
-const secret = "secret";
 class UserService {
 
     //checks if user exists
@@ -34,7 +33,7 @@ class UserService {
     }
 
     //create room
-    async addUser(user) {
+    async createUser(user) {
         return await User.create(user);
     }
 
@@ -60,18 +59,9 @@ class UserService {
             email: user.email,
             role: user.role
         }, secret, {
-            expiresIn: maxAge
+            expiresIn: MAXAGE
         });
     };
-
-
-
-
-
-    async findIfExists(emailOrId) {
-        const user = await this.findByIdOrEmail(emailOrId);
-        return { isTrue: !(_.isEmpty(user)), user };
-    }
 }
 
 module.exports = new UserService();

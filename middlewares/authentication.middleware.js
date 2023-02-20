@@ -1,4 +1,6 @@
 const jwt = require("jsonwebtoken");
+const {MESSAGES} = require("../constants/constants");
+
 
 // check json web token exists & is verified
 class Authenticate {
@@ -8,7 +10,7 @@ class Authenticate {
             return res.status(401)
             .send({ 
                 success: false, 
-                message: 'Access Denied: Token not provided' 
+                message: MESSAGES.AUTH.TOKENERROR
             });
         } else {
             const decodedToken = jwt.verify(token, "secret");
