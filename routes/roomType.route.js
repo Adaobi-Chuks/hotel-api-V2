@@ -3,9 +3,10 @@ const express = require('express');
 const router = express.Router();
 const {authenticate} = require("../middlewares/authentication.middleware");
 const {authorizeAdmin} = require("../middlewares/authorization.middleware");
+const {validateRoomType} = require("../middlewares/roomTypeValidation.middleware");
 
 //create a room type
-router.post("/", addRoomType);
+router.post("/", authenticate, authorizeAdmin, validateRoomType, addRoomType);
 
 //Get all room types
 router.get("/", getAllRoomTypes);

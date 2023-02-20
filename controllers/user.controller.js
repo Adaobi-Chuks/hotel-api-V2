@@ -20,9 +20,8 @@ class UserController {
     //create user
     async createUser(req, res) {
 
-        //checks if req fields are valid
         const data = req.body;
-
+        
         //checks if another user with email exists
         if (await UserService.userExists(data.email)) {
             //sends an error if the email exists
