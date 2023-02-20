@@ -17,7 +17,8 @@ const RoomSchema = new Schema({
   },
   price: {
     type: Number,
-    required: true
+    required: true,
+    trim: true
   },
   floor: {
     type: Number,
@@ -26,7 +27,8 @@ const RoomSchema = new Schema({
   },
   capacity: {
     type: Number,
-    required: false
+    required: false,
+    trim: true
   },
   amenities: {
     type: [String],
@@ -35,7 +37,8 @@ const RoomSchema = new Schema({
   booked: {
     type: Boolean,
     default: false,
-    required: false
+    required: false,
+    trim: true
   }
 });
 

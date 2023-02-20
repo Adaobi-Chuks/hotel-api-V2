@@ -77,7 +77,7 @@ class UserController {
             message: INVALID_ID_ERROR,
             success: false
         })
-        // Fetching existing book title
+        // Fetching existing user email
         if(data.email){
             const existingRoomEmail  = await UserService.find(data.email)
             if(existingRoomEmail){

@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
 const {MESSAGES} = require("../constants/constants");
 
-
 // check json web token exists & is verified
 class Authenticate {
     async authenticate(req, res, next){
