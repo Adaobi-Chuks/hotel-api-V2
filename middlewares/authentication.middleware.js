@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const {MESSAGES} = require("../constants/constants");
+const secret = process.env.SECRET;
 
 // check json web token exists & is verified
 class Authenticate {
@@ -12,7 +13,7 @@ class Authenticate {
                 message: MESSAGES.AUTH.TOKENERROR
             });
         } else {
-            const decodedToken = jwt.verify(token, "secret");
+            const decodedToken = jwt.verify(token, secret);
             req.user = decodedToken;
             next();
         }

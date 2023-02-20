@@ -11,10 +11,10 @@ router.get("/", UserController.getUsers);
 //get a user
 router.get("/:id", UserController.getUserById);
 //edit any user details
-router.patch("/:id", authenticate, validateUser.bind(null, true), UserController.editUser);
+router.patch("/:id", authenticate, validateUser, UserController.editUser);
 //delete user
 router.delete("/:id", authenticate, UserController.deleteUserById);
 //login user
-router.post("/login", validateUser.bind(null, true), UserController.login);
+router.post("/login", validateUser, UserController.login);
 
 module.exports = router;
